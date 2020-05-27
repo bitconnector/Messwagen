@@ -7,44 +7,36 @@ long Umdrehungen;
 void showValues()
 {
     String XML;
-    XML = "<?xml version='1.0'?>";
-    XML += "<data>";
-    XML += "<uptime>";
+    XML = F("<?xml version='1.0'?><data><uptime>");
     XML += millis2time();
-    XML += "</uptime>";
-    XML += "<speed>";
+    XML += F("</uptime><speed>");
     XML += calcSpeed(); //millis();
     XML += " ";
     XML += Einheit; //übertragung der Einheit
-    XML += "</speed>";
-    XML += "<distance>";
+    XML += F("</speed><distance>");
     XML += calcDistance();
-    XML += "</distance>";
-    XML += "</data>";
+    XML += F("</distance></data>");
     server.send(200, "text/xml", XML);
 }
 
 void showSettings()
 {
     String HTML;
-    HTML = "<?xml version='1.0'?>";
-    HTML += "<data>";
-    HTML += "<einheit>";
+    HTML = F("<?xml version='1.0'?><data><einheit>");
     HTML += EinheitM;
-    HTML += "</einheit>";
-    HTML += "<durchmesser>";
+    HTML += F("</einheit><durchmesser>");
     HTML += Raddurchmesser;
-    HTML += "</durchmesser><massstab>";
+    HTML += F("</durchmesser><massstab>");
     HTML += Massstab;
-    HTML += "</massstab><faktor>";
+    HTML += F("</massstab><faktor>");
     HTML += Faktor;
-    HTML += "</faktor><pulseproumdrehung>";
+    HTML += F("</faktor><pulseproumdrehung>");
     HTML += PulseproUmdrehung;
-    HTML += "</pulseproumdrehung><wlan>";
+    HTML += F("</pulseproumdrehung><wlan>");
     HTML += mode;
-    HTML += "</wlan><ssid>";
+    HTML += F("</wlan><ssid>");
     HTML += ssid;
-    HTML += "</ssid></data>";
+    HTML += F("</ssid></data>");
     server.send(200, "text/xml", HTML);
 }
 
@@ -54,7 +46,9 @@ void detectPulse()
     {
         if (h)
         {
+#ifdef DEBUG_PRINT
             Serial.println("Flanke");
+#endif
             h = 0;
             zeit2 = zeit1;
             zeit1 = millis();
