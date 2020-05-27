@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html charset="UTF-8">
+
+<SCRIPT>
+
+	function process() {
+
+		var Connect = new XMLHttpRequest();
+		Connect.open("GET", "show_settings.xml", false);
+		Connect.setRequestHeader("Content-Type", "text/xml");
+		Connect.send(null);
+
+		var xmlResponse = Connect.responseXML;
+
+		var selected = xmlResponse.getElementsByTagName('einheit')[0].firstChild.nodeValue;
+		var selectElement = document.getElementsByName('ei')[0];
+		var selectOptions = selectElement.options;
+		for (var opt, j = 0; opt = selectOptions[j]; j++) {
+			if (opt.value == selected) {
+				selectElement.selectedIndex = j;
+				break;
+			}
+		}
+
+		document.getElementsByName("du")[0].value = xmlResponse.getElementsByTagName("durchmesser")[0].firstChild.nodeValue;
+		document.getElementsByName("ma")[0].value = xmlResponse.getElementsByTagName("massstab")[0].firstChild.nodeValue;
+		document.getElementsByName("mu")[0].value = xmlResponse.getElementsByTagName("faktor")[0].firstChild.nodeValue;
+		document.getElementsByName("pu")[0].value = xmlResponse.getElementsByTagName("pulseproumdrehung")[0].firstChild.nodeValue;
+	}
+
+	function buttonLed() {
+		connection.send("/LED?state=1");
+		coreOut();
+	}
+
+</SCRIPT>
+
+
+
+<head>
+	<title>ESP-Config</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<style>
+		.c {
+			text-align: center;
+		}
+
+		div,
+		input,
+		select {
+			padding: 5px;
+			font-size: 1em;
+		}
+
+		input {
+			width: 95%;
+		}
+
+		body {
+			text-align: center;
+			font-family: verdana;
+		}
+
+		button {
+			border: 0;
+			border-radius: 0.3rem;
+			background-color: #1fa3ec;
+			color: #fff;
+			line-height: 2.4rem;
+			font-size: 1.2rem;
+			width: 100%;
+		}
+
+		.q {
+			float: right;
+			width: 64px;
+			text-align: right;
+		}
+	</style>
+</head>
+
+<BODY onload='process()'>
+	<div style="text-align:left;display:inline-block;min-width:260px;">
+		<h1><a href="/">Einstellungen</a></h1>
+		<form method='get' action='setting'>
+			<label>Einheit </label>
+			<select name='ei'>
+				<option value=0>km/h</option>
+				<option value=2>m/s</option>
+				<option value=1>mph</option>
+			</select>
+			<br><label>Raddurchmesser in mm </label><input name='du'></input>
+			<br><label>Masstab 1:</label><input name='ma'></input>
+			<br><label>Multiplikator </label><input name='mu'></input>
+			<br><label>PulseproUmdrehung </label><input name='pu'></input>
+			<br><br><button type='submit'>speichern</button>
+		</form>
+		<br>
+		<form action="/setting?factory-reset=1" method="post">
+			<button>Defaultwerte</button>
+		</form>
+		<br>
+        <form action="/wlan.html" method="get">
+            <button>Wlan Einstellungen</button>
+		</form>
+		<br>
+        <form action="/" method="get">
+            <button>Abbrechen</button>
+        </form>
+	</div>
+</BODY>
+
+</HTML>

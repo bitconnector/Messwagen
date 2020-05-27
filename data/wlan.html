@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html charset="UTF-8">
+
+<SCRIPT>
+    function process() {
+
+        var Connect = new XMLHttpRequest();
+        Connect.open("GET", "show_settings.xml", false);
+        Connect.setRequestHeader("Content-Type", "text/xml");
+        Connect.send(null);
+
+        var xmlResponse = Connect.responseXML;
+
+        var selected = xmlResponse.getElementsByTagName('wlan')[0].firstChild.nodeValue;
+        var selectElement = document.getElementsByName('wlan')[0];
+        var selectOptions = selectElement.options;
+        for (var opt, j = 0; opt = selectOptions[j]; j++) {
+            if (opt.value == selected) {
+                selectElement.selectedIndex = j;
+                break;
+            }
+        }
+
+        document.getElementsByName("ssid")[0].value = xmlResponse.getElementsByTagName("ssid")[0].firstChild.nodeValue;
+
+        modus();
+    }
+
+    function modus() {
+        if (document.getElementsByName("wlan")[0].value == 0)
+            document.getElementById("pw").hidden = true
+        else
+            document.getElementById("pw").hidden = false;
+    }
+</SCRIPT>
+
+
+
+<head>
+    <title>ESP-Config</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <style>
+        .c {
+            text-align: center;
+        }
+
+        div,
+        input,
+        select {
+            padding: 5px;
+            font-size: 1em;
+        }
+
+        input {
+            width: 95%;
+        }
+
+        body {
+            text-align: center;
+            font-family: verdana;
+        }
+
+        button {
+            border: 0;
+            border-radius: 0.3rem;
+            background-color: #1fa3ec;
+            color: #fff;
+            line-height: 2.4rem;
+            font-size: 1.2rem;
+            width: 100%;
+        }
+
+        .q {
+            float: right;
+            width: 64px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<BODY onload='process()'>
+    <div style="text-align:left;display:inline-block;min-width:260px;">
+        <h1><a href="/">WLAN Einstellungen</a></h1>
+        <form method='post' action='setting'>
+            <label>Modus: </label>
+            <select name='wlan' onchange="modus()">
+                <option value=0>Hotspot</option>
+                <option value=1>Client</option>
+            </select>
+            <br>
+            <br><label>SSID</label><input name='ssid'></input>
+            <br>
+            <div id="pw">
+                <label>Password</label><input name='pass' placeholder="(unveraendert)"></input>
+            </div>
+            <br><button type='submit'>speichern</button>
+        </form>
+        <br>
+		<form action="/setting?factory-reset=2" method="post">
+			<button>Werkseinstellungen</button>
+		</form>
+        <br>
+        <form action="/" method="get">
+            <button>Abbrechen</button>
+        </form>
+    </div>
+</BODY>
+
+</HTML>
