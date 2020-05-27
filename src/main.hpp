@@ -10,6 +10,10 @@
 //#define CLIENT
 
 #include "settings.hpp"
+#include "xml.hpp"
+
+//#define DEBUG_LED 2
+//#define DEBUG_PRINT
 
 extern ESP8266WebServer server;
 
@@ -19,9 +23,6 @@ extern byte mode;
 
 extern String Einheit;
 extern int EinheitM;
-extern bool h;
-extern long Umdrehungen;
-extern volatile unsigned long zeit1, zeit2;
 
 extern float Raddurchmesser;
 extern float Massstab;

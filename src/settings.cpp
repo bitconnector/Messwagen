@@ -75,7 +75,9 @@ void loadSettings()
   eeAddress += sizeof(byte);
   if (b)
   { //Nur einlesen, wenn Einstellungen vorgenommen wurden
+#ifdef DEBUG_PRINT
     Serial.println("Einstellungen im EEPROM gefunden");
+#endif
     EEPROM.get(eeAddress, Raddurchmesser);
     eeAddress += sizeof(float);
     EEPROM.get(eeAddress, Massstab);
@@ -141,11 +143,15 @@ void handleSetting()
   tmp = server.arg("factory-reset");
   if (tmp.length() > 0)
   {
+#ifdef DEBUG_PRINT
     Serial.println("RESET auf Werkseinstellungen");
+#endif
     EEPROM.put(0, bool(0)); //Indikator für gesetzte Einstellungen
     if (tmp == "2")
     {
+#ifdef DEBUG_PRINT
       Serial.println("Reset Wifi");
+#endif
       EEPROM.put(0 + sizeof(bool), byte(2));
     }
     EEPROM.commit();
@@ -155,15 +161,19 @@ void handleSetting()
   tmp = server.arg("reset");
   if (tmp.length() > 0)
   {
+#ifdef DEBUG_PRINT
     Serial.print("RESET der Strecke");
     Serial.println(Umdrehungen);
+#endif
     Umdrehungen = 0;
   }
 
   tmp = server.arg("wlan");
   if (tmp.length() > 0)
   {
+#ifdef DEBUG_PRINT
     Serial.print("Neue Netzwerkeinstellungen");
+#endif
     if (tmp.toInt() == 0)
     { //Hotspot
       mode = 0;
@@ -190,37 +200,49 @@ void handleSetting()
 
   else
   {
+#ifdef DEBUG_PRINT
     Serial.println("Neue Einstellung");
+#endif
     if (mass > 0 && mass < 3000)
     {
       Massstab = mass;
+#ifdef DEBUG_PRINT
       Serial.print("Massstab: ");
       Serial.println(Massstab);
+#endif
     }
     if (teinheit >= 0 && teinheit <= 2)
     {
       EinheitM = teinheit;
       setEinheit();
+#ifdef DEBUG_PRINT
       Serial.print("Einheit: ");
       Serial.println(Einheit);
+#endif
     }
     if (dur > 1 && dur < 25)
     {
       Raddurchmesser = dur;
+#ifdef DEBUG_PRINT
       Serial.print("Raddurchmesser: ");
       Serial.println(Raddurchmesser);
+#endif
     }
     if (mult > 0.05 && mult < 11)
     {
       Faktor = mult;
+#ifdef DEBUG_PRINT
       Serial.print("Faktor: ");
       Serial.println(Faktor);
+#endif
     }
     if (pul > 0 && pul < 50)
     {
       PulseproUmdrehung = pul;
+#ifdef DEBUG_PRINT
       Serial.print("PulseproUmdrehung: ");
       Serial.println(PulseproUmdrehung);
+#endif
     }
     writeSettings();
   }
@@ -230,70 +252,63 @@ void handleSetting()
   file.close();
 }
 
-void showSettings()
-{
-  String HTML;
-  HTML = "<?xml version='1.0'?>";
-  HTML += "<data>";
-  HTML += "<einheit>";
-  HTML += EinheitM;
-  HTML += "</einheit>";
-  HTML += "<durchmesser>";
-  HTML += Raddurchmesser;
-  HTML += "</durchmesser><massstab>";
-  HTML += Massstab;
-  HTML += "</massstab><faktor>";
-  HTML += Faktor;
-  HTML += "</faktor><pulseproumdrehung>";
-  HTML += PulseproUmdrehung;
-  HTML += "</pulseproumdrehung><wlan>";
-  HTML += mode;
-  HTML += "</wlan><ssid>";
-  HTML += ssid;
-  HTML += "</ssid></data>";
-  server.send(200, "text/xml", HTML);
-}
-
 void startWifi()
 {
   if (mode)
   {
+#ifdef DEBUG_PRINT
     Serial.println();
     Serial.print("Connecting ");
+#endif
     WiFi.begin(ssid.c_str(), password.c_str());
     unsigned long zeit = millis() + 30000;
     while (!WiFi.isConnected() && millis() < zeit)
     {
       delay(500);
+#ifdef DEBUG_PRINT
       Serial.print(".");
-      digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
+#endif
+#ifdef DEBUG_LED
+      digitalWrite(DEBUG_LED, !digitalRead(DEBUG_LED));
+#endif
     }
-    Serial.println();
     WiFi.mode(WIFI_STA);
+#ifdef DEBUG_PRINT
+    Serial.println();
     Serial.println("\n\nBOOTING ESP8266 ...");
     Serial.print("Connected to ");
     Serial.println(ssid);
     Serial.print("Station IP address: ");
     Serial.println(WiFi.localIP());
-    digitalWrite(BUILTIN_LED, HIGH);
+#endif
+#ifdef DEBUG_LED
+    digitalWrite(DEBUG_LED, HIGH);
+#endif
   }
   if (!WiFi.isConnected())
   {
-    digitalWrite(BUILTIN_LED, LOW);
+#ifdef DEBUG_LED
+    digitalWrite(DEBUG_LED, LOW);
+#endif
     WiFi.disconnect();
     WiFi.mode(WIFI_AP);
+#ifdef DEBUG_PRINT
     Serial.print("AP: ");
+#endif
     if (mode)
     {
+#ifdef DEBUG_PRINT
       Serial.println("Failsafe");
+#endif
       genSSID();
     }
-    Serial.println(ssid);
     WiFi.softAP(ssid, "");
+#ifdef DEBUG_PRINT
+    Serial.println(ssid);
     Serial.print("Server IP address: ");
     Serial.println(WiFi.softAPIP());
     Serial.print("Server MAC address: ");
     Serial.println(WiFi.softAPmacAddress());
-    //Serial.println(ESP.getChipId());
+#endif
   }
 }

@@ -6,7 +6,6 @@
 void writeSettings();
 void loadSettings();
 void handleSetting();
-void showSettings();
 void genSSID();
 void startWifi();
 
