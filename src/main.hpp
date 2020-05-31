@@ -11,25 +11,21 @@
 
 #include "settings.hpp"
 #include "xml.hpp"
+#include "wlan.hpp"
 
 //#define DEBUG_LED 2
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 
 extern ESP8266WebServer server;
 
-extern String ssid;
-extern String password;
-extern byte mode;
 
-extern String Einheit;
-extern int EinheitM;
+// extern int EinheitM;
 
-extern float Raddurchmesser;
-extern float Massstab;
-extern float Faktor;
-extern int PulseproUmdrehung;
-
-extern float Radumfang;
+// extern float Raddurchmesser;
+// extern float Massstab;
+// extern float Faktor;
+// extern int PulseproUmdrehung;
+extern struct Settings settings;
 
 
 #endif

@@ -1,17 +1,7 @@
 #include "main.hpp"
 
-byte mode = 0;
-String ssid = "";
-String password = "";
 
 ESP8266WebServer server(80);
-String Einheit = "km/h";
-int EinheitM = 0;
-
-float Raddurchmesser = 4; //Standartwerte für spur N
-float Massstab = 160;
-float Faktor = 2;
-int PulseproUmdrehung = 2;
 
 float Radumfang;
 
@@ -40,6 +30,7 @@ void setup()
   server.on("/show_values.xml", showValues);
   server.on("/setting", handleSetting);
   server.on("/show_settings.xml", showSettings);
+  server.on("/wlan_setting", handleWlanSetting);
 
   server.begin();
   setupPulse();

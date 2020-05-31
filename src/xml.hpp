@@ -2,6 +2,8 @@
 #define XML_H
 
 #include "main.hpp"
+#include "settings.hpp"
+#include "wlan.hpp"
 
 void showValues();
 void showSettings();
@@ -11,6 +13,7 @@ void setupPulse();
 extern volatile unsigned long zeit1, zeit2;
 extern bool h;
 extern long Umdrehungen;
+extern struct Settings settings;
 
 String millis2time();
 float calcSpeed();
