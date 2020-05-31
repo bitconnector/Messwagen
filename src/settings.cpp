@@ -1,50 +1,29 @@
 #include "settings.hpp"
 
+struct Settings settings;
+String Einheit = "km/h";
+
 void writeSettings()
 {
   int eeAddress = 0;
-  EEPROM.put(eeAddress, bool(1)); //Indikator für gesetzte Einstellungen
-  eeAddress += sizeof(bool);
-  EEPROM.put(eeAddress, mode);
-  eeAddress += sizeof(byte);
-  EEPROM.put(eeAddress, Raddurchmesser);
-  eeAddress += sizeof(float);
-  EEPROM.put(eeAddress, Massstab);
-  eeAddress += sizeof(float);
-  EEPROM.put(eeAddress, Faktor);
-  eeAddress += sizeof(float);
-  EEPROM.put(eeAddress, PulseproUmdrehung);
-  eeAddress += sizeof(int);
-  EEPROM.put(eeAddress, EinheitM);
-  eeAddress += sizeof(int);
+  EEPROM.put(eeAddress, settings);
+  eeAddress += sizeof(settings);
+  EEPROM.put(eeAddress, client);
+  eeAddress += sizeof(client);
 
-  int i;
-  if (mode == 1)
+  writeString(eeAddress, ssid);
+  if (client == 1)
   {
-    for (i = 0; i < password.length(); i++)
-    {
-      EEPROM.write(eeAddress + i, password[i]);
-    }
-    eeAddress += i;
-    EEPROM.write(eeAddress, '\0');
+    eeAddress += sizeof(ssid);
     eeAddress++;
+    writeString(eeAddress, password);
   }
-  for (i = 0; i < ssid.length(); i++)
-  {
-    EEPROM.write(eeAddress + i, ssid[i]);
-  }
-  eeAddress += i;
-  EEPROM.write(eeAddress, '\0');
-  eeAddress++;
-
   EEPROM.commit();
-  Radumfang = 3.1415926535 * Raddurchmesser;
-  Radumfang /= PulseproUmdrehung;
 }
 
 void setEinheit()
 {
-  switch (EinheitM)
+  switch (settings.einheit)
   {
   case 1: //mph
     Einheit = "mph";
@@ -54,91 +33,36 @@ void setEinheit()
     break;
   default: //km/h
     Einheit = "km/h";
-    EinheitM = 0;
+    settings.einheit = 0;
     break;
   }
-}
-
-void genSSID()
-{
-  ssid = "Wagen-" + String(ESP.getChipId());
+  Radumfang = 3.1415926535 * settings.durchmesser;
+  Radumfang /= settings.pulse;
 }
 
 void loadSettings()
 {
   genSSID();
-  bool b = 0;
   int eeAddress = 0;
-  EEPROM.get(eeAddress, b);
-  eeAddress += sizeof(bool);
-  EEPROM.get(eeAddress, mode);
-  eeAddress += sizeof(byte);
-  if (b)
-  { //Nur einlesen, wenn Einstellungen vorgenommen wurden
-#ifdef DEBUG_PRINT
-    Serial.println("Einstellungen im EEPROM gefunden");
-#endif
-    EEPROM.get(eeAddress, Raddurchmesser);
-    eeAddress += sizeof(float);
-    EEPROM.get(eeAddress, Massstab);
-    eeAddress += sizeof(float);
-    EEPROM.get(eeAddress, Faktor);
-    eeAddress += sizeof(float);
-    EEPROM.get(eeAddress, PulseproUmdrehung);
-    eeAddress += sizeof(int);
-    EEPROM.get(eeAddress, EinheitM);
-    eeAddress += sizeof(int);
-  }
-  else
+  EEPROM.get(eeAddress, settings);
+  eeAddress += sizeof(settings);
+  EEPROM.get(eeAddress, client);
+  eeAddress += sizeof(client);
+
+  ssid = readString(eeAddress);
+  if (client == 1)
   {
-    eeAddress += sizeof(float) + sizeof(float) + sizeof(float) + sizeof(int) + sizeof(int);
-  }
-  if (mode != 2)
-  {
-    int i;
-    char c;
-    if (mode == 1)
-    {
-      password = "";
-      i = 0;
-      c = EEPROM.read(eeAddress);
-      while (i < 40 && c != '\0')
-      {
-        password += c;
-        i++;
-        c = EEPROM.read(eeAddress + i);
-      }
-      eeAddress += i + 1;
-    }
-    ssid = "";
-    i = 0;
-    c = EEPROM.read(eeAddress);
-    while (i < 40 && c != '\0')
-    {
-      ssid += c;
-      i++;
-      c = EEPROM.read(eeAddress + i);
-    }
+    eeAddress += sizeof(ssid);
+    eeAddress++;
+    password = readString(eeAddress);
   }
 
-  EEPROM.commit();
   setEinheit();
-  Radumfang = 3.1415926535 * Raddurchmesser;
-  Radumfang /= PulseproUmdrehung;
 }
 
 void handleSetting()
 {
-  String tmp = server.arg("ei");
-  int teinheit = tmp.toInt();
-  tmp = server.arg("ma");
-  float mass = tmp.toFloat();
-  tmp = server.arg("du");
-  float dur = tmp.toFloat();
-  tmp = server.arg("mu");
-  float mult = tmp.toFloat();
-  tmp = server.arg("pu");
-  int pul = tmp.toInt();
+  String tmp;
 
   tmp = server.arg("factory-reset");
   if (tmp.length() > 0)
@@ -146,169 +70,131 @@ void handleSetting()
 #ifdef DEBUG_PRINT
     Serial.println("RESET auf Werkseinstellungen");
 #endif
-    EEPROM.put(0, bool(0)); //Indikator für gesetzte Einstellungen
-    if (tmp == "2")
-    {
-#ifdef DEBUG_PRINT
-      Serial.println("Reset Wifi");
-#endif
-      EEPROM.put(0 + sizeof(bool), byte(2));
-    }
-    EEPROM.commit();
-    ESP.reset();
+    setDefaultSettings(tmp.toInt());
   }
 
   tmp = server.arg("reset");
   if (tmp.length() > 0)
   {
 #ifdef DEBUG_PRINT
-    Serial.print("RESET der Strecke");
+    Serial.print("RESET der Strecke: ");
     Serial.println(Umdrehungen);
 #endif
     Umdrehungen = 0;
   }
 
-  tmp = server.arg("wlan");
-  if (tmp.length() > 0)
-  {
-#ifdef DEBUG_PRINT
-    Serial.print("Neue Netzwerkeinstellungen");
-#endif
-    if (tmp.toInt() == 0)
-    { //Hotspot
-      mode = 0;
-      if (server.arg("ssid") != "")
-      {
-        ssid = server.arg("ssid");
-      }
-    }
-    else
-    { //client
-      mode = 1;
-      if (server.arg("ssid") != "")
-      {
-        ssid = server.arg("ssid");
-      }
-      if (server.arg("pass") != "")
-      {
-        password = server.arg("pass");
-      }
-    }
-    startWifi();
-    writeSettings();
-  }
-
   else
   {
-#ifdef DEBUG_PRINT
-    Serial.println("Neue Einstellung");
-#endif
+    tmp = server.arg("ma");
+    float mass = tmp.toFloat();
     if (mass > 0 && mass < 3000)
     {
-      Massstab = mass;
-#ifdef DEBUG_PRINT
-      Serial.print("Massstab: ");
-      Serial.println(Massstab);
-#endif
+      settings.massstab = mass;
     }
+    tmp = server.arg("ei");
+    int teinheit = tmp.toInt();
     if (teinheit >= 0 && teinheit <= 2)
     {
-      EinheitM = teinheit;
+      settings.einheit = teinheit;
       setEinheit();
-#ifdef DEBUG_PRINT
-      Serial.print("Einheit: ");
-      Serial.println(Einheit);
-#endif
     }
+    tmp = server.arg("du");
+    float dur = tmp.toFloat();
     if (dur > 1 && dur < 25)
     {
-      Raddurchmesser = dur;
-#ifdef DEBUG_PRINT
-      Serial.print("Raddurchmesser: ");
-      Serial.println(Raddurchmesser);
-#endif
+      settings.durchmesser = dur;
     }
+    tmp = server.arg("mu");
+    float mult = tmp.toFloat();
     if (mult > 0.05 && mult < 11)
     {
-      Faktor = mult;
-#ifdef DEBUG_PRINT
-      Serial.print("Faktor: ");
-      Serial.println(Faktor);
-#endif
+      settings.faktor = mult;
     }
+    tmp = server.arg("pu");
+    int pul = tmp.toInt();
     if (pul > 0 && pul < 50)
     {
-      PulseproUmdrehung = pul;
-#ifdef DEBUG_PRINT
-      Serial.print("PulseproUmdrehung: ");
-      Serial.println(PulseproUmdrehung);
-#endif
+      settings.pulse = pul;
     }
     writeSettings();
+    printSettings();
   }
 
   File file = SPIFFS.open("/erfolg.html", "r"); //läd wieder die Startseite
-  size_t sent = server.streamFile(file, "text/html");
+  server.streamFile(file, "text/html");
   file.close();
 }
 
-void startWifi()
+void writeString(int start, String data)
 {
-  if (mode)
+  int _size = data.length();
+  for (int i = 0; i < _size; i++)
   {
-#ifdef DEBUG_PRINT
-    Serial.println();
-    Serial.print("Connecting ");
-#endif
-    WiFi.begin(ssid.c_str(), password.c_str());
-    unsigned long zeit = millis() + 30000;
-    while (!WiFi.isConnected() && millis() < zeit)
-    {
-      delay(500);
-#ifdef DEBUG_PRINT
-      Serial.print(".");
-#endif
-#ifdef DEBUG_LED
-      digitalWrite(DEBUG_LED, !digitalRead(DEBUG_LED));
-#endif
-    }
-    WiFi.mode(WIFI_STA);
-#ifdef DEBUG_PRINT
-    Serial.println();
-    Serial.println("\n\nBOOTING ESP8266 ...");
-    Serial.print("Connected to ");
-    Serial.println(ssid);
-    Serial.print("Station IP address: ");
-    Serial.println(WiFi.localIP());
-#endif
-#ifdef DEBUG_LED
-    digitalWrite(DEBUG_LED, HIGH);
-#endif
+    EEPROM.write(start + i, data[i]);
   }
-  if (!WiFi.isConnected())
+  EEPROM.write(start + _size, '\0'); //Add termination null character for String Data
+  EEPROM.commit();
+}
+
+String readString(int start)
+{
+  String data = "";
+  char c;
+  for (byte i = 0; i < 40; i++)
   {
-#ifdef DEBUG_LED
-    digitalWrite(DEBUG_LED, LOW);
-#endif
-    WiFi.disconnect();
-    WiFi.mode(WIFI_AP);
-#ifdef DEBUG_PRINT
-    Serial.print("AP: ");
-#endif
-    if (mode)
-    {
-#ifdef DEBUG_PRINT
-      Serial.println("Failsafe");
-#endif
-      genSSID();
-    }
-    WiFi.softAP(ssid, "");
-#ifdef DEBUG_PRINT
-    Serial.println(ssid);
-    Serial.print("Server IP address: ");
-    Serial.println(WiFi.softAPIP());
-    Serial.print("Server MAC address: ");
-    Serial.println(WiFi.softAPmacAddress());
-#endif
+    c = EEPROM.read(start + i);
+    if (c == '\0')
+      break;
+    data += c;
   }
+  return data;
+}
+
+void resetString(int index, int size)
+{
+  size += index;
+  while (index < size)
+  {
+    index++;
+    EEPROM.write(index, '\0');
+  }
+  EEPROM.commit();
+}
+
+void setDefaultSettings(byte type)
+{
+  settings.durchmesser = 4;
+  settings.massstab = 160;
+  settings.faktor = 2;
+  settings.pulse = 2;
+  settings.einheit = 0;
+
+  if (type == 2)
+  {
+    resetString(sizeof(settings), 64);
+    genSSID();
+    printWlan();
+  }
+
+  writeSettings();
+  printSettings();
+}
+
+void printSettings()
+{
+#ifdef DEBUG_PRINT
+  Serial.println("Settings:");
+  Serial.print("Durchmesser: ");
+  Serial.println(settings.durchmesser);
+  Serial.print("Massstab: ");
+  Serial.println(settings.faktor);
+  Serial.print("Faktor: ");
+  Serial.println(settings.faktor);
+  Serial.print("Pulse pro Umdrehung: ");
+  Serial.println(settings.pulse);
+  Serial.print("Einheit (");
+  Serial.print(settings.einheit);
+  Serial.print("): ");
+  Serial.println(Einheit);
+#endif
 }

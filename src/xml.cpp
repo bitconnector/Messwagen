@@ -10,9 +10,8 @@ void showValues()
     XML = F("<?xml version='1.0'?><data><uptime>");
     XML += millis2time();
     XML += F("</uptime><speed>");
-    XML += calcSpeed(); //millis();
-    XML += " ";
-    XML += Einheit; //übertragung der Einheit
+    XML += calcSpeed();
+    XML += " " + Einheit;
     XML += F("</speed><distance>");
     XML += calcDistance();
     XML += F("</distance></data>");
@@ -23,17 +22,17 @@ void showSettings()
 {
     String HTML;
     HTML = F("<?xml version='1.0'?><data><einheit>");
-    HTML += EinheitM;
+    HTML += settings.einheit;
     HTML += F("</einheit><durchmesser>");
-    HTML += Raddurchmesser;
+    HTML += settings.durchmesser;
     HTML += F("</durchmesser><massstab>");
-    HTML += Massstab;
+    HTML += settings.massstab;
     HTML += F("</massstab><faktor>");
-    HTML += Faktor;
+    HTML += settings.faktor;
     HTML += F("</faktor><pulseproumdrehung>");
-    HTML += PulseproUmdrehung;
+    HTML += settings.pulse;
     HTML += F("</pulseproumdrehung><wlan>");
-    HTML += mode;
+    HTML += client;
     HTML += F("</wlan><ssid>");
     HTML += ssid;
     HTML += F("</ssid></data>");
@@ -95,9 +94,9 @@ float calcSpeed()
     if (Zeit > 30000)
         return 0; //Timeout für pulse länger als 30Sekunden
     float geschw = Radumfang / Zeit;
-    geschw *= Massstab; //Multiplizieren mit dem Massstab
-    geschw *= Faktor;   //Multiplizieren mit dem Faktor
-    switch (EinheitM)
+    geschw *= settings.massstab; //Multiplizieren mit dem Massstab
+    geschw *= settings.faktor;   //Multiplizieren mit dem Faktor
+    switch (settings.einheit)
     {
     case 1: //mph
         geschw *= 2.236936;
