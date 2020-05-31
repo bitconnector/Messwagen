@@ -19,6 +19,7 @@ void writeSettings();
 void loadSettings();
 void handleSetting();
 void printSettings();
+void handleReset();
 
 void writeString(int start, String data);
 String readString(int start);
