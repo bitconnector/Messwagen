@@ -62,9 +62,48 @@ void loadSettings()
 
 void handleSetting()
 {
-  String tmp;
+  String tmp = server.arg("ma");
+  float mass = tmp.toFloat();
+  if (mass > 0 && mass < 3000)
+  {
+    settings.massstab = mass;
+  }
+  tmp = server.arg("ei");
+  int teinheit = tmp.toInt();
+  if (teinheit >= 0 && teinheit <= 2)
+  {
+    settings.einheit = teinheit;
+    setEinheit();
+  }
+  tmp = server.arg("du");
+  float dur = tmp.toFloat();
+  if (dur > 1 && dur < 25)
+  {
+    settings.durchmesser = dur;
+  }
+  tmp = server.arg("mu");
+  float mult = tmp.toFloat();
+  if (mult > 0.05 && mult < 11)
+  {
+    settings.faktor = mult;
+  }
+  tmp = server.arg("pu");
+  int pul = tmp.toInt();
+  if (pul > 0 && pul < 50)
+  {
+    settings.pulse = pul;
+  }
+  writeSettings();
+  printSettings();
 
-  tmp = server.arg("factory-reset");
+  File file = SPIFFS.open("/erfolg.html", "r"); //läd wieder die Startseite
+  server.streamFile(file, "text/html");
+  file.close();
+}
+
+void handleReset()
+{
+  String tmp = server.arg("factory-reset");
   if (tmp.length() > 0)
   {
 #ifdef DEBUG_PRINT
@@ -82,44 +121,6 @@ void handleSetting()
 #endif
     Umdrehungen = 0;
   }
-
-  else
-  {
-    tmp = server.arg("ma");
-    float mass = tmp.toFloat();
-    if (mass > 0 && mass < 3000)
-    {
-      settings.massstab = mass;
-    }
-    tmp = server.arg("ei");
-    int teinheit = tmp.toInt();
-    if (teinheit >= 0 && teinheit <= 2)
-    {
-      settings.einheit = teinheit;
-      setEinheit();
-    }
-    tmp = server.arg("du");
-    float dur = tmp.toFloat();
-    if (dur > 1 && dur < 25)
-    {
-      settings.durchmesser = dur;
-    }
-    tmp = server.arg("mu");
-    float mult = tmp.toFloat();
-    if (mult > 0.05 && mult < 11)
-    {
-      settings.faktor = mult;
-    }
-    tmp = server.arg("pu");
-    int pul = tmp.toInt();
-    if (pul > 0 && pul < 50)
-    {
-      settings.pulse = pul;
-    }
-    writeSettings();
-    printSettings();
-  }
-
   File file = SPIFFS.open("/erfolg.html", "r"); //läd wieder die Startseite
   server.streamFile(file, "text/html");
   file.close();

@@ -31,6 +31,7 @@ void setup()
   server.on("/setting", handleSetting);
   server.on("/show_settings.xml", showSettings);
   server.on("/wlan_setting", handleWlanSetting);
+  server.on("/reset", handleReset);
 
   server.begin();
   setupPulse();
