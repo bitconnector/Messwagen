@@ -22,6 +22,7 @@
 			}
 		}
 
+		document.getElementsByName("name")[0].value = xmlResponse.getElementsByTagName("name")[0].firstChild.nodeValue;
 		document.getElementsByName("du")[0].value = xmlResponse.getElementsByTagName("durchmesser")[0].firstChild.nodeValue;
 		document.getElementsByName("ma")[0].value = xmlResponse.getElementsByTagName("massstab")[0].firstChild.nodeValue;
 		document.getElementsByName("mu")[0].value = xmlResponse.getElementsByTagName("faktor")[0].firstChild.nodeValue;
@@ -83,7 +84,8 @@
 	<div style="text-align:left;display:inline-block;min-width:260px;">
 		<h1><a href="/">Einstellungen</a></h1>
 		<form method='get' action='setting'>
-			<label>Einheit </label>
+			<label>Name </label><input name='name'></input>
+			<br><br><label>Einheit </label>
 			<select name='ei'>
 				<option value=0>km/h</option>
 				<option value=2>m/s</option>

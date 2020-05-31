@@ -21,7 +21,9 @@ void showValues()
 void showSettings()
 {
     String HTML;
-    HTML = F("<?xml version='1.0'?><data><einheit>");
+    HTML = F("<?xml version='1.0'?><data><name>");
+    HTML += Name;
+    HTML += F("</name><einheit>");
     HTML += settings.einheit;
     HTML += F("</einheit><durchmesser>");
     HTML += settings.durchmesser;
