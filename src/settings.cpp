@@ -2,21 +2,24 @@
 
 struct Settings settings;
 String Einheit = "km/h";
+String Name = "";
 
 void writeSettings()
 {
-  int eeAddress = 0;
+  uint16 eeAddress = 0;
   EEPROM.put(eeAddress, settings);
   eeAddress += sizeof(settings);
   EEPROM.put(eeAddress, client);
   eeAddress += sizeof(client);
 
   writeString(eeAddress, ssid);
+  eeAddress += sizeof(ssid) + 1;
+  writeString(eeAddress, Name);
+  eeAddress += sizeof(Name) + 1;
   if (client == 1)
   {
-    eeAddress += sizeof(ssid);
-    eeAddress++;
     writeString(eeAddress, password);
+    eeAddress += sizeof(password) + 1;
   }
   EEPROM.commit();
 }
@@ -42,19 +45,24 @@ void setEinheit()
 
 void loadSettings()
 {
-  genSSID();
-  int eeAddress = 0;
+  uint16 eeAddress = 0;
   EEPROM.get(eeAddress, settings);
   eeAddress += sizeof(settings);
   EEPROM.get(eeAddress, client);
   eeAddress += sizeof(client);
 
   ssid = readString(eeAddress);
+  eeAddress += sizeof(ssid) + 1;
+  Name = readString(eeAddress);
+  eeAddress += sizeof(Name) + 1;
+  if (Name == "")
+  {
+    Name = String(ESP.getChipId());
+  }
   if (client == 1)
   {
-    eeAddress += sizeof(ssid);
-    eeAddress++;
     password = readString(eeAddress);
+    eeAddress += sizeof(password) + 1;
   }
 
   setEinheit();
@@ -93,6 +101,12 @@ void handleSetting()
   {
     settings.pulse = pul;
   }
+  tmp = server.arg("name");
+  if (tmp != "")
+  {
+    Name = tmp;
+  }
+
   writeSettings();
   printSettings();
 
@@ -164,18 +178,18 @@ void resetString(int index, int size)
 
 void setDefaultSettings(byte type)
 {
+  if (type == 2)
+  {
+    resetString(sizeof(settings), sizeof(Name) + sizeof(ssid) + sizeof(password) + 3);
+    genSSID();
+    printWlan();
+  }
   settings.durchmesser = 4;
   settings.massstab = 160;
   settings.faktor = 2;
   settings.pulse = 2;
   settings.einheit = 0;
-
-  if (type == 2)
-  {
-    resetString(sizeof(settings), 64);
-    genSSID();
-    printWlan();
-  }
+  Name = "Wagen-" + String(ESP.getChipId());
 
   writeSettings();
   printSettings();
@@ -185,6 +199,8 @@ void printSettings()
 {
 #ifdef DEBUG_PRINT
   Serial.println("Settings:");
+  Serial.print("Name: ");
+  Serial.println(Name);
   Serial.print("Durchmesser: ");
   Serial.println(settings.durchmesser);
   Serial.print("Massstab: ");

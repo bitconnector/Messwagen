@@ -13,6 +13,7 @@ struct Settings {
 
 extern float Radumfang;
 extern String Einheit;
+extern String Name;
 
 
 void writeSettings();
