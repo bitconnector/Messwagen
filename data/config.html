@@ -2,7 +2,6 @@
 <html charset="UTF-8">
 
 <SCRIPT>
-
 	function process() {
 
 		var Connect = new XMLHttpRequest();
@@ -28,12 +27,6 @@
 		document.getElementsByName("mu")[0].value = xmlResponse.getElementsByTagName("faktor")[0].firstChild.nodeValue;
 		document.getElementsByName("pu")[0].value = xmlResponse.getElementsByTagName("pulseproumdrehung")[0].firstChild.nodeValue;
 	}
-
-	function buttonLed() {
-		connection.send("/LED?state=1");
-		coreOut();
-	}
-
 </SCRIPT>
 
 
