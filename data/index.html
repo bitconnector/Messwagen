@@ -10,6 +10,7 @@
 		}
 		return xmlHttp;
 	}
+
 	function process() {
 		if (xmlHttp.readyState == 0 || xmlHttp.readyState == 4) {
 			xmlHttp.open('PUT', 'show_values.xml', true);
@@ -18,6 +19,7 @@
 		}
 		setTimeout('process()', 200);
 	}
+
 	function handleServerResponse() {
 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 			xmlResponse = xmlHttp.responseXML;
@@ -35,12 +37,6 @@
 			document.getElementById('distance').innerHTML = message;
 		}
 	}
-
-	function buttonLed() {
-		connection.send("/LED?state=1");
-		coreOut();
-	}
-
 </SCRIPT>
 
 <html charset="UTF-8">
