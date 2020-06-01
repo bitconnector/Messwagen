@@ -47,13 +47,14 @@
 		var xmlResponse = Connect.responseXML;
 
 		document.getElementById("name").innerText = xmlResponse.getElementsByTagName("name")[0].firstChild.nodeValue;
+		document.getElementById("title").innerText = xmlResponse.getElementsByTagName("name")[0].firstChild.nodeValue;
 	}
 </SCRIPT>
 
 <html charset="UTF-8">
 
 <head>
-	<title>Messwagen</title>
+	<title id="title">Messwagen</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style>
 		.c {
