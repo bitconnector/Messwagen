@@ -22,6 +22,7 @@
         }
 
         document.getElementsByName("ssid")[0].value = xmlResponse.getElementsByTagName("ssid")[0].firstChild.nodeValue;
+		document.getElementById("title").innerText = xmlResponse.getElementsByTagName("name")[0].firstChild.nodeValue;
 
         modus();
     }
@@ -37,7 +38,7 @@
 
 
 <head>
-    <title>ESP-Config</title>
+    <title id="title">ESP-Config</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         .c {

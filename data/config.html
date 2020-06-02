@@ -26,13 +26,14 @@
 		document.getElementsByName("ma")[0].value = xmlResponse.getElementsByTagName("massstab")[0].firstChild.nodeValue;
 		document.getElementsByName("mu")[0].value = xmlResponse.getElementsByTagName("faktor")[0].firstChild.nodeValue;
 		document.getElementsByName("pu")[0].value = xmlResponse.getElementsByTagName("pulseproumdrehung")[0].firstChild.nodeValue;
+		document.getElementById("title").innerText = xmlResponse.getElementsByTagName("name")[0].firstChild.nodeValue;
 	}
 </SCRIPT>
 
 
 
 <head>
-	<title>ESP-Config</title>
+	<title id="title">ESP-Config</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 	<style>
 		.c {
