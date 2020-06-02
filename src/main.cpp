@@ -22,6 +22,7 @@ void setup()
 #endif
   SPIFFS.begin();
 
+  WiFi.hostname(Name);
   startWifi();
 
   server.serveStatic("/", SPIFFS, "/index.html");
