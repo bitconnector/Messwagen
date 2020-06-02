@@ -14,7 +14,7 @@
 #include "wlan.hpp"
 
 //#define DEBUG_LED 2
-#define DEBUG_PRINT
+//#define DEBUG_PRINT
 
 extern ESP8266WebServer server;
 
