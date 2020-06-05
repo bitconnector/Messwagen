@@ -63,7 +63,7 @@ void detectPulse()
 void setupPulse()
 {
     pinMode(Sensor, INPUT);
-    zeit1 = millis() - 30000; //Damit die Geschwindigkeit am Anfang 0 ist
+    zeit1 = millis() - PULSE_TIMEOUT; //Damit die Geschwindigkeit am Anfang 0 ist
     zeit2 = zeit1;
 }
 
@@ -93,8 +93,8 @@ float calcSpeed()
     int Zeit = zeit1 - zeit2;
     if (Zeit < millis() - zeit1)
         Zeit = millis() - zeit1; //Zeit verlängern, wenn der letzte Puls zu lange her war
-    if (Zeit > 30000)
-        return 0; //Timeout für pulse länger als 30Sekunden
+    if (Zeit > PULSE_TIMEOUT)
+        return 0; //Timeout für pulse länger als PULSE_TIMEOUT
     float geschw = Radumfang / Zeit;
     geschw *= settings.massstab; //Multiplizieren mit dem Massstab
     geschw *= settings.faktor;   //Multiplizieren mit dem Faktor
