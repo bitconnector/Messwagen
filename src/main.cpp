@@ -42,4 +42,5 @@ void loop()
 {
   server.handleClient();
   detectPulse();
+  yield();
 }
