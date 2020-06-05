@@ -6,15 +6,23 @@ long Umdrehungen;
 
 void showValues()
 {
+    float speed = calcSpeed();
+    float distance = calcDistance();
+
     String XML;
     XML = F("<?xml version='1.0'?><data><uptime>");
     XML += millis2time();
     XML += F("</uptime><speed>");
-    XML += addScale(calcSpeed());
+    XML += addScale(speed);
     XML += " " + Einheit;
-    XML += F("</speed><distance>");
-    XML += calcDistance();
-    XML += F("</distance></data>");
+    XML += F("</speed><realSpeed>");
+    XML += speed;
+    XML += " " + Einheit;
+    XML += F("</realSpeed><distance>");
+    XML += distance;
+    XML += F("</distance><scaleDistance>");
+    XML += addScale(distance);
+    XML += F("</scaleDistance></data>");
     server.send(200, "text/xml", XML);
 }
 
