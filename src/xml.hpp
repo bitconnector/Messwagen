@@ -5,6 +5,8 @@
 #include "settings.hpp"
 #include "wlan.hpp"
 
+#define PULSE_TIMEOUT 10000
+
 void showValues();
 void showSettings();
 void detectPulse();
