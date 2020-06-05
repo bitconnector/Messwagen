@@ -85,7 +85,7 @@ void handleSetting()
   }
   tmp = server.arg("du");
   float dur = tmp.toFloat();
-  if (dur > 1 && dur < 25)
+  if (dur > 1 && dur < 150)
   {
     settings.durchmesser = dur;
   }

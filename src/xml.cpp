@@ -94,8 +94,8 @@ float calcSpeed()
     if (Zeit < millis() - zeit1)
         Zeit = millis() - zeit1; //Zeit verlängern, wenn der letzte Puls zu lange her war
     if (Zeit > PULSE_TIMEOUT)
-        return 0; //Timeout für pulse länger als PULSE_TIMEOUT
-    float geschw = Radumfang / Zeit;
+        return 0;                    //Timeout für pulse länger als PULSE_TIMEOUT
+    float geschw = Radumfang / Zeit; //in mm/ms
     switch (settings.einheit)
     {
     case 1: //mph
