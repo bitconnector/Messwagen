@@ -20,5 +20,6 @@ extern struct Settings settings;
 String millis2time();
 float calcSpeed();
 float calcDistance();
+float addScale(float);
 
 #endif

@@ -10,7 +10,7 @@ void showValues()
     XML = F("<?xml version='1.0'?><data><uptime>");
     XML += millis2time();
     XML += F("</uptime><speed>");
-    XML += calcSpeed();
+    XML += addScale(calcSpeed());
     XML += " " + Einheit;
     XML += F("</speed><distance>");
     XML += calcDistance();
@@ -96,8 +96,6 @@ float calcSpeed()
     if (Zeit > PULSE_TIMEOUT)
         return 0; //Timeout für pulse länger als PULSE_TIMEOUT
     float geschw = Radumfang / Zeit;
-    geschw *= settings.massstab; //Multiplizieren mit dem Massstab
-    geschw *= settings.faktor;   //Multiplizieren mit dem Faktor
     switch (settings.einheit)
     {
     case 1: //mph
@@ -115,4 +113,11 @@ float calcSpeed()
 float calcDistance()
 {
     return Umdrehungen * Radumfang / 1000;
+}
+
+float addScale(float value)
+{
+    value *= settings.massstab; //Multiplizieren mit dem Massstab
+    value *= settings.faktor;   //Multiplizieren mit dem Faktor
+    return value;
 }
