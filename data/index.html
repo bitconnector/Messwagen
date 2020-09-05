@@ -32,6 +32,10 @@
 			message = xmldoc[0].firstChild.nodeValue;
 			document.getElementById('Geschwindigkeit').innerHTML = message;
 
+			xmldoc = xmlResponse.getElementsByTagName('realSpeed');
+			message = xmldoc[0].firstChild.nodeValue;
+			document.getElementById('GeschwindigkeitR').innerHTML = message;
+
 			xmldoc = xmlResponse.getElementsByTagName('distance');
 			message = xmldoc[0].firstChild.nodeValue;
 			document.getElementById('distance').innerHTML = message;
@@ -99,6 +103,7 @@
 		<h1 id='name'>ESP8266-MessWagen</h1>
 		<br>Laufzeit = <A id='runtime'></A>
 		<br>Geschwindigkeit = <A id='Geschwindigkeit'></A>
+		<br>Geschwindigkeit = <A id='GeschwindigkeitR'></A> (1:1)
 		<br>Strecke = <A id='distance'></A> m
 		<br><br>
 		<form action="/reset?reset=1" method="post">

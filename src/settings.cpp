@@ -184,9 +184,9 @@ void setDefaultSettings(byte type)
     genSSID();
     printWlan();
   }
-  settings.durchmesser = 4;
-  settings.massstab = 160;
-  settings.faktor = 2;
+  settings.durchmesser = 11.5;
+  settings.massstab = 87;
+  settings.faktor = 1;
   settings.pulse = 2;
   settings.einheit = 0;
   Name = "Wagen-" + String(ESP.getChipId());

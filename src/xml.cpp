@@ -14,7 +14,7 @@ void showValues()
     XML += millis2time();
     XML += F("</uptime><speed>");
     XML += addScale(speed);
-    XML += " " + Einheit;
+    XML += " " + Einheit + " (1:" + int(settings.massstab) + ")";
     XML += F("</speed><realSpeed>");
     XML += speed;
     XML += " " + Einheit;
@@ -99,10 +99,12 @@ String millis2time()
 float calcSpeed()
 {
     int Zeit = zeit1 - zeit2;
-    if (Zeit < millis() - zeit1)
-        Zeit = millis() - zeit1; //Zeit verlängern, wenn der letzte Puls zu lange her war
-    if (Zeit > PULSE_TIMEOUT)
-        return 0;                    //Timeout für pulse länger als PULSE_TIMEOUT
+    int ZeitA = millis() - zeit1;
+    if (2*Zeit < ZeitA)
+        return 0;                    //Timeout für pulse doppelt so lange, wie der Letzte
+    if (Zeit < ZeitA){
+        Zeit = ZeitA; //Zeit verlängern, wenn der letzte Puls zu lange her war
+    }
     float geschw = Radumfang / Zeit; //in mm/ms
     switch (settings.einheit)
     {
