@@ -29,7 +29,7 @@ void handleWlanSetting()
         startWifi();
     }
 
-    File file = SPIFFS.open("/erfolg.html", "r"); //läd wieder die Startseite
+    File file = LittleFS.open("/erfolg.html", "r"); //läd wieder die Startseite
     server.streamFile(file, "text/html");
     file.close();
 }

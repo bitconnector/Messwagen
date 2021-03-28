@@ -20,14 +20,14 @@ void setup()
 #ifdef DEBUG_PRINT
   Serial.println("size: " + String(ESP.getFlashChipSize()) + ", real size: " + String(ESP.getFlashChipRealSize()));
 #endif
-  SPIFFS.begin();
+  LittleFS.begin();
 
   WiFi.hostname(Name);
   startWifi();
 
-  server.serveStatic("/", SPIFFS, "/index.html");
-  server.serveStatic("/config.html", SPIFFS, "/config.html");
-  server.serveStatic("/wlan.html", SPIFFS, "/wlan.html");
+  server.serveStatic("/", LittleFS, "/index.html");
+  server.serveStatic("/config.html", LittleFS, "/config.html");
+  server.serveStatic("/wlan.html", LittleFS, "/wlan.html");
   server.on("/show_values.xml", showValues);
   server.on("/setting", handleSetting);
   server.on("/show_settings.xml", showSettings);

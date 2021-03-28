@@ -110,7 +110,7 @@ void handleSetting()
   writeSettings();
   printSettings();
 
-  File file = SPIFFS.open("/erfolg.html", "r"); //läd wieder die Startseite
+  File file = LittleFS.open("/erfolg.html", "r"); //läd wieder die Startseite
   server.streamFile(file, "text/html");
   file.close();
 }
@@ -135,7 +135,7 @@ void handleReset()
 #endif
     Umdrehungen = 0;
   }
-  File file = SPIFFS.open("/erfolg.html", "r"); //läd wieder die Startseite
+  File file = LittleFS.open("/erfolg.html", "r"); //läd wieder die Startseite
   server.streamFile(file, "text/html");
   file.close();
 }
